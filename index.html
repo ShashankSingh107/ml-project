@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Essay Submission</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        textarea {
+            width: 100%;
+            height: 200px;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            resize: vertical;
+        }
+        button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            font-size: 18px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+            
+        /* Hover effect on the button */
+        button:hover {
+            background-color: #088F8F;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Submit Your Essay</h1>
+        <form id="essayForm">
+            <div class="form-group">
+                <label for="essay">Enter your essay:</label>
+                <textarea id="essay" name="essay" placeholder="Type your essay here..." required></textarea>
+            </div>
+            <button type="submit">Submit Essay</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('essayForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const essay = document.getElementById('essay').value;
+
+            fetch('/submit_essay', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: 'essay=' + encodeURIComponent(essay)
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Display the results
+                displayResults(data);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+
+        function displayResults(data) {
+            const resultsContainer = document.createElement('div');
+            resultsContainer.classList.add('container');
+            
+            const resultTitle = document.createElement('h1');
+            resultTitle.textContent = 'Essay Analysis Results';
+            resultsContainer.appendChild(resultTitle);
+            
+            const resultDetails = `
+                <p><strong>Essay Score:</strong> ${data.score}</p>
+                <p><strong>Unique Vocabulary:</strong> ${data.vocab_unique}</p>
+                <p><strong>Total Words:</strong> ${data.vocab_total}</p>
+                <p><strong>Average Sentence Length:</strong> ${data.avg_sentence_len} words</p>
+                <p><strong>Keywords:</strong> ${data.keywords.join(', ')}</p>
+                <p><strong>Longest Sentence:</strong> ${data.longest_sentence}</p>
+                <p><strong>Shortest Sentence:</strong> ${data.shortest_sentence}</p>
+            `;
+            resultsContainer.innerHTML += resultDetails;
+            
+            // Append the results to the body
+            document.body.appendChild(resultsContainer);
+        }
+    </script>
+</body>
+</html> 
